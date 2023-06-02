@@ -45,6 +45,13 @@ public class Usuario {
     inverseJoinColumns = @JoinColumn(name = "id_rol", referencedColumnName = "id_rol"))
     private Set<Rol> roles = new HashSet<>();
 
+    public Usuario(){}
+
+    public Usuario(String email, String contrasenia) {
+        this.email = email;
+        this.contrasenia = contrasenia;
+    }
+
     public Long getIdUsuario() {
         return idUsuario;
     }
