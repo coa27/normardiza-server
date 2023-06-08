@@ -32,6 +32,26 @@ public class Tablero {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "tablero")
     private List<Tarea> tarea;
 
+    public Tablero() {
+    }
+
+    public Tablero(Long idTablero) {
+        this.idTablero = idTablero;
+    }
+
+    public Tablero(Long idTablero, String nombre, LocalDate createdAt, LocalDate updatedAt, Usuario usuario) {
+        this.idTablero = idTablero;
+        this.nombre = nombre;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.usuario = usuario;
+    }
+
+    public Tablero(String nombre, Usuario usuario) {
+        this.nombre = nombre;
+        this.usuario = usuario;
+    }
+
     public Long getIdTablero() {
         return idTablero;
     }

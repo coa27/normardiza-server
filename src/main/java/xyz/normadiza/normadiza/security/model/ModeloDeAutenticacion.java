@@ -11,13 +11,14 @@ public class ModeloDeAutenticacion implements Authentication {
     private final String email;
     private final String password;
     private final Collection<? extends GrantedAuthority> authorities;
-    private final Long id;
+    private final DetallesDelUsuario detalles;
 
-    public ModeloDeAutenticacion(String email, String password, Collection<? extends GrantedAuthority> authorities, Long id){
+    public ModeloDeAutenticacion(String email, String password, Collection<? extends GrantedAuthority> authorities, DetallesDelUsuario detalles){
         this.authorities = authorities;
-        this.id = id;
+        this.detalles = detalles;
         this.password = password;
         this.email = email;
+        setAuthenticated(true);
     }
 
     @Override
@@ -42,7 +43,7 @@ public class ModeloDeAutenticacion implements Authentication {
 
     @Override
     public Object getDetails() {
-        return id;
+        return detalles;
     }
 
     @Override
@@ -55,14 +56,4 @@ public class ModeloDeAutenticacion implements Authentication {
         return email;
     }
 
-    @Override
-    public String toString() {
-        return "ModeloDeAutenticacion{" +
-                "autenticado=" + autenticado +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", authorities=" + authorities +
-                ", id=" + id +
-                '}';
-    }
 }

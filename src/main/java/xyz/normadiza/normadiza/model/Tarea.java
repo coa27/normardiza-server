@@ -28,18 +28,31 @@ public class Tarea {
     private LocalDate inicioFecha;
 
     @Column(name = "final_fecha")
-    private LocalDate finalFecha;
+        private LocalDate finalFecha;
 
     @Column(name = "created_at")
-    private LocalDate createdAt = LocalDate.now();
+    private LocalDate createdAt;
 
     @Column(name = "updated_at")
-    private LocalDate updatedAt = LocalDate.now();
+    private LocalDate updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "id_tablero", nullable = false)
     private Tablero tablero;
 
+    public Tarea() {
+    }
+
+    public Tarea(String nombre, String descripcion, Boolean finalizado, LocalDate inicioFecha, LocalDate finalFecha, Tablero tablero) {
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.finalizado = finalizado;
+        this.inicioFecha = inicioFecha;
+        this.finalFecha = finalFecha;
+        this.createdAt = LocalDate.now();
+        this.updatedAt = LocalDate.now();
+        this.tablero = tablero;
+    }
 
     public Long getIdTarea() {
         return idTarea;

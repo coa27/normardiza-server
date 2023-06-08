@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import xyz.normadiza.normadiza.model.Usuario;
 import xyz.normadiza.normadiza.payload.request.LoginReqRecord;
@@ -15,6 +16,7 @@ import xyz.normadiza.normadiza.repo.IRolRepo;
 import xyz.normadiza.normadiza.repo.IUsuarioRepo;
 import xyz.normadiza.normadiza.security.jwt.TokenService;
 import xyz.normadiza.normadiza.security.manager.ManagerDeAutenticacion;
+import xyz.normadiza.normadiza.security.model.DetallesDelUsuario;
 import xyz.normadiza.normadiza.security.model.ModeloDeAutenticacion;
 import xyz.normadiza.normadiza.service.IAuthService;
 
@@ -52,7 +54,9 @@ public class AuthServiceImpl implements IAuthService {
                 new UsernamePasswordAuthenticationToken(loginReqRecord.email(), loginReqRecord.password())
         );
 
-        String token = tokenService.generarToken((Long) authentication.getDetails());
+        DetallesDelUsuario detallesDelUsuario = (DetallesDelUsuario) authentication.getDetails();
+
+        String token = tokenService.generarToken(detallesDelUsuario.idUsuario());
 
         return token;
     }

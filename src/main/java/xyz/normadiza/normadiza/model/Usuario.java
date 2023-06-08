@@ -47,6 +47,10 @@ public class Usuario {
 
     public Usuario(){}
 
+    public Usuario(Long idUsuario){
+        this.idUsuario = idUsuario;
+    }
+
     public Usuario(String email, String contrasenia) {
         this.email = email;
         this.contrasenia = contrasenia;

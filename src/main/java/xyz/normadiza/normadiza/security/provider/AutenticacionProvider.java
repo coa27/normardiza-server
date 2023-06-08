@@ -9,6 +9,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import xyz.normadiza.normadiza.security.model.DetallesDelUsuario;
 import xyz.normadiza.normadiza.security.model.ModeloDeAutenticacion;
 import xyz.normadiza.normadiza.security.model.UsuarioUserDetails;
 import xyz.normadiza.normadiza.security.service.UserDetailsServiceImpl;
@@ -45,7 +46,7 @@ public class AutenticacionProvider implements AuthenticationProvider {
                     email,
                     password,
                     userDetails.getAuthorities(),
-                    userDetails.getUsuario().getIdUsuario()
+                    new DetallesDelUsuario(userDetails.getUsuario().getIdUsuario(), null)
             );
         }
 

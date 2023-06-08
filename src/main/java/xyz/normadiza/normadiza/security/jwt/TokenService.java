@@ -28,7 +28,7 @@ public class TokenService {
                     .withIssuer("coasth_")
                     .withClaim("idUsuario", idUsuario)
                     .withIssuedAt(Instant.now())
-                    .withExpiresAt(Instant.now().plusSeconds(60*60*1))
+                    .withExpiresAt(Instant.now().plusSeconds(60*60*2))
                     .sign(Algorithm.HMAC512(secret));
 
             return token;
