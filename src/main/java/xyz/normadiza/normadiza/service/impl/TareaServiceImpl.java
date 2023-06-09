@@ -1,6 +1,10 @@
 package xyz.normadiza.normadiza.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.prepost.PreFilter;
 import org.springframework.stereotype.Service;
 import xyz.normadiza.normadiza.model.Tablero;
 import xyz.normadiza.normadiza.model.Tarea;
@@ -26,13 +30,15 @@ public class TareaServiceImpl extends CRUDImpl<Tarea, Long> implements ITareaSer
     }
 
     @Override
-    public List<TareaResRecord> obtenerTableros(Long idTablero) {
-        List<TareaResRecord> tareas = repo.obtenerTablero(idTablero);
+    @PreAuthorize("@autorizacionService.esSuTablero(#idTablero)")
+    public Page<TareaResRecord> obtenerTareas(Long idTablero, Pageable pageable) {
+        Page<TareaResRecord> tareas = repo.obtenerTarea(idTablero, pageable);
 
         return tareas;
     }
 
     @Override
+    @PreAuthorize("@autorizacionService.esSuTablero(#tareaReqRecord.idTablero())")
     public TareaResRecord agregarTarea(TareaReqRecord tareaReqRecord) {
         Tarea tareaDB = repo.save( (Tarea) crearTarea(tareaReqRecord));
 
@@ -41,6 +47,7 @@ public class TareaServiceImpl extends CRUDImpl<Tarea, Long> implements ITareaSer
     }
 
     @Override
+    @PreAuthorize("@autorizacionService.esSuTablero(#tareaResRecord.idTablero())")
     public TareaResRecord actualizarTarea(TareaResRecord tareaResRecord) {
         repo.actualizarTarea(
                 tareaResRecord.idTablero(),
@@ -55,6 +62,7 @@ public class TareaServiceImpl extends CRUDImpl<Tarea, Long> implements ITareaSer
     }
 
     @Override
+    @PreAuthorize("@autorizacionService.perteneceAlTablero(#idTarea)")
     public void eliminarTarea(Long idTarea) {
         repo.deleteById(idTarea);
     }

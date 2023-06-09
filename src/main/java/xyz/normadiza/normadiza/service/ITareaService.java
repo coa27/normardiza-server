@@ -1,14 +1,14 @@
 package xyz.normadiza.normadiza.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import xyz.normadiza.normadiza.model.Tarea;
 import xyz.normadiza.normadiza.payload.request.TareaReqRecord;
 import xyz.normadiza.normadiza.payload.response.TareaResRecord;
 
-import java.util.List;
-
 public interface ITareaService extends ICRUD<Tarea, Long>{
 
-    List<TareaResRecord> obtenerTableros(Long idTablero);
+    Page<TareaResRecord> obtenerTareas(Long idTablero, Pageable pageable);
 
     TareaResRecord agregarTarea(TareaReqRecord tareaReqRecord);
 

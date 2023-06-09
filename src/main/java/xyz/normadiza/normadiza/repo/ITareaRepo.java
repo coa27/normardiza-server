@@ -1,5 +1,7 @@
 package xyz.normadiza.normadiza.repo;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,7 +19,7 @@ public interface ITareaRepo extends IGenericRepo<Tarea, Long>{
             (t.idTarea, t.nombre, t.descripcion, t.finalizado, t.inicioFecha, t.finalFecha, t.tablero.idTablero)
             FROM Tarea t WHERE t.tablero.idTablero = :id
             """)
-    List<TareaResRecord> obtenerTablero(@Param("id") Long idTablero);
+    Page<TareaResRecord> obtenerTarea(@Param("id") Long idTablero, Pageable pageable);
 
     @Modifying
     @Transactional

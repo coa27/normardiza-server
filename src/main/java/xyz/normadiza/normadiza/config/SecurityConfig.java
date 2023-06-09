@@ -19,6 +19,7 @@ import xyz.normadiza.normadiza.security.provider.AutenticacionProvider;
 
 @Configuration
 @EnableWebSecurity(debug = true)
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Autowired
