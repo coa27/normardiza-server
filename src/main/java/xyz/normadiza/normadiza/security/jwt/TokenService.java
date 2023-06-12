@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import xyz.normadiza.normadiza.exceptions.customs.TokenNoValido;
 
 import java.time.Instant;
 
@@ -33,9 +34,8 @@ public class TokenService {
 
             return token;
         }catch (JWTCreationException e){
-            logger.error("Problemas con la creacion del token: " + e.getMessage());
+            throw new JWTCreationException(e.getMessage(), e.getCause());
         }
-        return null;
     }
 
     /***
@@ -59,9 +59,8 @@ public class TokenService {
             return decodedJWT;
 
         }catch (JWTVerificationException e){
-            logger.error("Problemas en la verificacion del token: " + e.getMessage());
+            throw new TokenNoValido(e.getMessage());
         }
-        return null;
     }
 
     public static boolean tokenExpirado(DecodedJWT decodedJWT){

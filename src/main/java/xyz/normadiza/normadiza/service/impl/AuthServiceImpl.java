@@ -10,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import xyz.normadiza.normadiza.exceptions.customs.EmailNoValidoException;
 import xyz.normadiza.normadiza.model.Usuario;
 import xyz.normadiza.normadiza.payload.request.LoginReqRecord;
 import xyz.normadiza.normadiza.payload.request.ValidarTokenReqRecord;
@@ -68,7 +69,7 @@ public class AuthServiceImpl implements IAuthService {
     @Override
     public String registro(LoginReqRecord registroReqRecord) {
         if(repo.findByEmail(registroReqRecord.email()).isPresent()){
-            return null;
+            throw new EmailNoValidoException("El email ya esta en uso");
         }
 
         Usuario usuario = new Usuario(registroReqRecord.email(), passwordEncoder.encode(registroReqRecord.password()));
@@ -85,13 +86,14 @@ public class AuthServiceImpl implements IAuthService {
         DecodedJWT decodedJWT = tokenService.validarJwt(token.token());
         String tokenNuevo;
 
-        //Si al token le faltan 30 minutos para expirar, se crea un nuevo token, si no,se devuelve el mismo token validado
+        //Si al token le faltan 30 minutos para expirar, se crea un nuevo token
         if ((Instant.now().until(decodedJWT.getExpiresAtAsInstant(), ChronoUnit.MINUTES)) < 30){
             Long id =  Long.parseLong(decodedJWT.getClaim("idUsuario").toString());
             tokenNuevo = tokenService.generarToken(id);
             return tokenNuevo;
         }
 
+        //si no,se devuelve el mismo token validado
         tokenNuevo = token.token();
         return tokenNuevo;
     }

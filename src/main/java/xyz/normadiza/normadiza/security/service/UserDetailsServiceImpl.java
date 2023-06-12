@@ -1,6 +1,7 @@
 package xyz.normadiza.normadiza.security.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,7 +18,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Usuario usuario = repo.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("Email no encontrado "+ username));
+        Usuario usuario = repo.findByEmail(username).orElseThrow(() -> new BadCredentialsException("Credenciales erroneas"));
 
         return new UsuarioUserDetails(usuario);
     }

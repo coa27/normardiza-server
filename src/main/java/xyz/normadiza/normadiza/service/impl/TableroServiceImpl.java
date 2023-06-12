@@ -3,6 +3,7 @@ package xyz.normadiza.normadiza.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreFilter;
@@ -52,7 +53,7 @@ public class TableroServiceImpl extends CRUDImpl<Tablero, Long> implements ITabl
     public TablerosResRecord actualizarTablero(TablerosResRecord tablerosResRecord) {
         DetallesDelUsuario detallesDelUsuario = (DetallesDelUsuario) SecurityContextHolder.getContext().getAuthentication().getDetails();
         if (!detallesDelUsuario.idsTableros().contains(tablerosResRecord.idTablero())){
-            throw new AuthorizationServiceException("Este no es su tablero compa");
+            throw new AccessDeniedException("Este no es su tablero compa");
         }
 
         repo.actualizarTablero(tablerosResRecord.idTablero(), tablerosResRecord.nombre(), LocalDate.now());
@@ -64,7 +65,7 @@ public class TableroServiceImpl extends CRUDImpl<Tablero, Long> implements ITabl
     public void eliminarTablero(Long id) {
         DetallesDelUsuario detallesDelUsuario = (DetallesDelUsuario) SecurityContextHolder.getContext().getAuthentication().getDetails();
         if (!detallesDelUsuario.idsTableros().contains(id)){
-            throw new AuthorizationServiceException("Este no es su tablero compa");
+            throw new AccessDeniedException("Este no es su tablero compa");
         }
 
         repo.deleteById(id);
