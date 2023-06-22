@@ -14,6 +14,7 @@ import xyz.normadiza.normadiza.exceptions.customs.EmailNoValidoException;
 import xyz.normadiza.normadiza.model.Usuario;
 import xyz.normadiza.normadiza.payload.request.LoginReqRecord;
 import xyz.normadiza.normadiza.payload.request.ValidarTokenReqRecord;
+import xyz.normadiza.normadiza.payload.response.LoginResRecord;
 import xyz.normadiza.normadiza.repo.IRolRepo;
 import xyz.normadiza.normadiza.repo.IUsuarioRepo;
 import xyz.normadiza.normadiza.security.jwt.TokenService;
@@ -54,7 +55,7 @@ public class AuthServiceImpl implements IAuthService {
      * @return String devuelve el JWT correspondiente a la sesion del usuario.
      */
     @Override
-    public String acceder(LoginReqRecord loginReqRecord) {
+    public LoginResRecord acceder(LoginReqRecord loginReqRecord) {
         ModeloDeAutenticacion authentication = (ModeloDeAutenticacion) managerDeAutenticacion.authenticate(
                 new UsernamePasswordAuthenticationToken(loginReqRecord.email(), loginReqRecord.password())
         );
@@ -63,11 +64,11 @@ public class AuthServiceImpl implements IAuthService {
 
         String token = tokenService.generarToken(detallesDelUsuario.idUsuario());
 
-        return token;
+        return new LoginResRecord(loginReqRecord.email(), token);
     }
 
     @Override
-    public String registro(LoginReqRecord registroReqRecord) {
+    public LoginResRecord registro(LoginReqRecord registroReqRecord) {
         if(repo.findByEmail(registroReqRecord.email()).isPresent()){
             throw new EmailNoValidoException("El email ya esta en uso");
         }
@@ -78,11 +79,11 @@ public class AuthServiceImpl implements IAuthService {
 
         String token = tokenService.generarToken(usuario.getIdUsuario());
 
-        return token;
+        return new LoginResRecord(registroReqRecord.email(), token);
     }
 
     @Override
-    public String validarToken(ValidarTokenReqRecord token) {
+    public LoginResRecord validarToken(ValidarTokenReqRecord token) {
         DecodedJWT decodedJWT = tokenService.validarJwt(token.token());
         String tokenNuevo;
 
@@ -90,12 +91,12 @@ public class AuthServiceImpl implements IAuthService {
         if ((Instant.now().until(decodedJWT.getExpiresAtAsInstant(), ChronoUnit.MINUTES)) < 30){
             Long id =  Long.parseLong(decodedJWT.getClaim("idUsuario").toString());
             tokenNuevo = tokenService.generarToken(id);
-            return tokenNuevo;
+            return new LoginResRecord(null, tokenNuevo);
         }
 
         //si no,se devuelve el mismo token validado
         tokenNuevo = token.token();
-        return tokenNuevo;
+        return new LoginResRecord(null, tokenNuevo);
     }
 
 

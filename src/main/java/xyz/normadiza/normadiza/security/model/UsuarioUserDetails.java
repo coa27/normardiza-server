@@ -42,7 +42,7 @@ public class UsuarioUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return usuario.getNoBaneado();
     }
 
     @Override

@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import xyz.normadiza.normadiza.exceptions.customs.UsuarioBaneadoException;
 import xyz.normadiza.normadiza.model.Usuario;
 import xyz.normadiza.normadiza.security.model.UsuarioUserDetails;
 import xyz.normadiza.normadiza.repo.IUsuarioRepo;
@@ -19,6 +20,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Usuario usuario = repo.findByEmail(username).orElseThrow(() -> new BadCredentialsException("Credenciales erroneas"));
+
+        if (!usuario.getNoBaneado()){
+            throw new UsuarioBaneadoException("El usuario ha sido baneado");
+        }
 
         return new UsuarioUserDetails(usuario);
     }

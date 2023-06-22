@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.apache.el.parser.Token;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,7 +48,7 @@ public class TokenService {
      * @param token
      * @return
      */
-    public DecodedJWT validarJwt(String token){
+    public DecodedJWT validarJwt(String token) {
         try {
             JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC512(secret))
                     .withIssuer("coasth_")
@@ -57,15 +58,9 @@ public class TokenService {
             DecodedJWT decodedJWT = jwtVerifier.verify(token);
 
             return decodedJWT;
-
         }catch (JWTVerificationException e){
             throw new TokenNoValido(e.getMessage());
         }
-    }
-
-    public static boolean tokenExpirado(DecodedJWT decodedJWT){
-        Instant instant = decodedJWT.getExpiresAtAsInstant();
-        return instant.isAfter(Instant.now());
     }
 
 }

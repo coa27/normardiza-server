@@ -6,20 +6,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import xyz.normadiza.normadiza.exceptions.customs.EmailNoValidoException;
 import xyz.normadiza.normadiza.exceptions.customs.EntidadNoEncontradaException;
+import xyz.normadiza.normadiza.exceptions.customs.TokenNoValido;
+import xyz.normadiza.normadiza.exceptions.customs.UsuarioBaneadoException;
 
 import java.time.LocalDateTime;
 
 @ControllerAdvice
-@RestController
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 
@@ -67,5 +72,28 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(UsuarioBaneadoException.class)
+    protected ResponseEntity<Object> handleUsuarioBaneadoException(UsuarioBaneadoException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse("Problemas en la autenticacion", ex.getMessage(), LocalDateTime.now());
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(TokenNoValido.class)
+    protected ResponseEntity<Object> handleTokenNoValidoException(TokenNoValido ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse("Problemas en la verificacion del token", ex.getMessage(), LocalDateTime.now());
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AuthorizationServiceException.class)
+    protected ResponseEntity<Object> handleAuthenticationException(AuthorizationServiceException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse("Problemas en la verificacion del token", ex.getMessage(), LocalDateTime.now());
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    protected ResponseEntity<Object> handleAuthenticationException(Exception ex) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse("Problemas en la autenticacion", ex.getMessage(), LocalDateTime.now());
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.UNAUTHORIZED);
+    }
 
 }

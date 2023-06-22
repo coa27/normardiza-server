@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import xyz.normadiza.normadiza.exceptions.customs.TokenNoValido;
 import xyz.normadiza.normadiza.model.Usuario;
 import xyz.normadiza.normadiza.repo.ITableroRepo;
 import xyz.normadiza.normadiza.repo.IUsuarioRepo;
@@ -46,11 +47,11 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             if (!request.getHeader("Authorization").startsWith("Bearer ")){
-                throw new AuthorizationServiceException("no tiene el token");
+                throw new TokenNoValido("No tiene token");
             }
 
         }catch (NullPointerException e){
-            throw new AuthorizationServiceException("no tiene el header");
+            throw new TokenNoValido("No tiene el header para la autenticacion del token");
         }
 
         String token = request.getHeader("Authorization").substring(7);
@@ -63,16 +64,9 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
 
-//        Authentication authentication = new UsernamePasswordAuthenticationToken(
-//                usuario.getIdUsuario(),
-//                usuario.getContrasenia(),
-//                usuario.getRoles().stream()
-//                        .map( rol -> new SimpleGrantedAuthority(rol.getNombre().toString())).collect(Collectors.toList())
-//        );
-
         /***
          * Para que la autorizacion del usuario sobre los tableros sean mas faciles, se le agrega informacion como el
-         * id del usuario y el id de todos los tableros que tiene.
+         * id del usuario y el id de todos los tableros que haya creado.
          */
         ModeloDeAutenticacion authentication = new ModeloDeAutenticacion(
                 usuario.getEmail(),

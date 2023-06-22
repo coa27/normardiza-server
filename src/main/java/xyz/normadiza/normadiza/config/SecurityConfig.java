@@ -12,10 +12,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.context.SecurityContextHolderFilter;
 import xyz.normadiza.normadiza.security.filter.CustomAuthenticationFilter;
 import xyz.normadiza.normadiza.security.provider.AutenticacionProvider;
+import xyz.normadiza.normadiza.security.service.AuthEntryPoint;
 
 @Configuration
 @EnableWebSecurity(debug = true)
@@ -30,6 +33,9 @@ public class SecurityConfig {
     private CustomAuthenticationFilter authenticationFilter;
 
     @Autowired
+    private AuthEntryPoint authenticationEntryPoint;
+
+    @Autowired
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -41,14 +47,18 @@ public class SecurityConfig {
         httpSecurity
                 .csrf(csrf -> csrf.disable())
                 .authenticationProvider(autenticacionProvider)
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> {
                     req
                             .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/auth/**").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/admin/**").hasAuthority("admin")
+                            .requestMatchers(HttpMethod.GET, "/admin/**").hasAuthority("admin")
                             .anyRequest().authenticated();
                 });
 
-        httpSecurity.addFilterAfter(authenticationFilter, SecurityContextHolderFilter.class);
+        httpSecurity.addFilterBefore(authenticationFilter, ExceptionTranslationFilter.class);
 
         return httpSecurity.build();
     }

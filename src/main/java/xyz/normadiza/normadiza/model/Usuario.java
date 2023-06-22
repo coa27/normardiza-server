@@ -1,19 +1,40 @@
 package xyz.normadiza.normadiza.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import xyz.normadiza.normadiza.model.projections.Projections;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+
+/***
+ * La relacion usuarios <-> roles no esta mapeada por JPA, por lo que se debe realizar un Native Query para obtenerlo
+ * y realizar la presentacion correcta de la clase Usuario mostrando lo necesario, principalmente para el acceso de admin.
+ */
 @Entity
 @Table(name = "usuario")
+@SqlResultSetMapping(
+        name = "usuariosRoles",
+        classes = {
+                @ConstructorResult(
+                        targetClass = Projections.UsuariosRoles.class,
+                        columns = {
+                                @ColumnResult(name = "id_usuario", type = Long.class),
+                                @ColumnResult(name = "id_rol", type = Long.class)
+                        }
+                )
+        }
+)
+@NamedNativeQuery(
+        name = "Usuario.obtenerRoles",
+        query = "SELECT * FROM usuarios_roles WHERE id_usuario = :id",
+        resultSetMapping = "usuariosRoles"
+)
 public class Usuario {
 
     @Id
@@ -45,6 +66,9 @@ public class Usuario {
     inverseJoinColumns = @JoinColumn(name = "id_rol", referencedColumnName = "id_rol"))
     private Set<Rol> roles = new HashSet<>();
 
+    @Column(name = "no_baneado")
+    private Boolean noBaneado;
+
     public Usuario(){}
 
     public Usuario(Long idUsuario){
@@ -54,6 +78,15 @@ public class Usuario {
     public Usuario(String email, String contrasenia) {
         this.email = email;
         this.contrasenia = contrasenia;
+        this.noBaneado = true;
+    }
+
+    public Usuario(Long idUsuario, String email, LocalDate createdAt, LocalDate updatedAt, Boolean noBaneado) {
+        this.idUsuario = idUsuario;
+        this.email = email;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.noBaneado = noBaneado;
     }
 
     public Long getIdUsuario() {
@@ -110,5 +143,13 @@ public class Usuario {
 
     public void setRoles(Set<Rol> roles) {
         this.roles = roles;
+    }
+
+    public Boolean getNoBaneado() {
+        return noBaneado;
+    }
+
+    public void setNoBaneado(Boolean noBaneado) {
+        this.noBaneado = noBaneado;
     }
 }
